@@ -47,8 +47,24 @@ app.post('/books', (req, res) => {
     };
     books.push(book);
     res.send(book);
-})
+}); //raw is ok!
+
+app.put('books/:id', (req, res) => {
+    var book = books.find((book) => {
+        return book.id === Number(req.body.id);
+    });
+    book.name = req.body.name;
+    book.author = req.body.author;
+    res.send(book);
+}); //not working   
+
+app.delete('books/:id', (req, res) => {
+    books = books.filter((book) => {
+        return book.id !== Number(req.params.id)
+    });
+    res.sendStatus(200);
+}); //not working
 
 app.listen(3000, () => {
     console.log('api app started');
-})
+});
