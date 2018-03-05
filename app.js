@@ -56,14 +56,14 @@ app.put('books/:id', (req, res) => {
     book.name = req.body.name;
     book.author = req.body.author;
     res.send(book);
-}); //not working   
+}); //not working  raw/xxx
 
 app.delete('books/:id', (req, res) => {
     books = books.filter((book) => {
         return book.id !== Number(req.params.id)
     });
     res.sendStatus(200);
-}); //not working
+}); //not working raw/xxx
 
 app.listen(3000, () => {
     console.log('api app started');
