@@ -42,8 +42,8 @@ app.get('/books/:id', (req, res) => {
 app.post('/books', (req, res) => {
     var book = {
         id: Date.now(),
-        name: req.body.name,
-        author: req.body.author
+        name: req.body.name, //не паше
+        author: req.body.author //не паше
     };
     books.push(book);
     res.send(book);
