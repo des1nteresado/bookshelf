@@ -70,7 +70,11 @@ app.delete('/books/:id', (req, res) => {
     var item = books.indexOf(books.find(book => book.id === Number(req.params.id)));
     books.splice(item, 1);
     res.sendStatus(200);
+<<<<<<< HEAD
 });
+=======
+}); //not working raw/xxx
+>>>>>>> 9e45d49b47a2e6343209ce3440e7794a8bff29ed
 
 app.listen(3000, () => {
     console.log('api app started');
