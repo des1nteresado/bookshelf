@@ -1,70 +1,47 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-
-var app = express();
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const Book = require('./book');
+const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var books = [{
-        id: 1,
-        name: "Татарин",
-        author: "Толстой"
-    },
-    {
-        id: 2,
-        name: "Болгарин",
-        author: "Худой"
-    },
-    {
-        id: 3,
-        name: "Боярин",
-        author: "Средний"
-    }
-];
-
-
-app.get('/', (req, res) => {
-    res.send('Hello api');
+mongoose.connect('mongodb://localhost/mongoose_basics', function(err) {
+    if (err) throw err;
 });
 
 app.get('/books', (req, res) => {
-    res.send(books);
-});
-
-app.get('/books/:id', (req, res) => {
-    var book = books.find((book) => {
-        return book.id === Number(req.params.id);
+    Book.find((err, book) => {
+        if (err) throw err;
+        res.send(book);
     });
-    res.send(book);
 });
 
 app.post('/books', (req, res) => {
-    var book = {
-        id: Date.now(),
-        name: req.body.name, //не паше
-        author: req.body.author //не паше
-    };
-    books.push(book);
-    res.send(book);
-}); //raw is ok!
-
-app.put('books/:id', (req, res) => {
-    var book = books.find((book) => {
-        return book.id === Number(req.body.id);
+    const book = new Book({
+        _id: new mongoose.Types.ObjectId(),
+        name: req.body.name,
+        author: req.body.author
     });
-    book.name = req.body.name;
-    book.author = req.body.author;
-    res.send(book);
-}); //not working  raw/xxx
-
-app.delete('books/:id', (req, res) => {
-    books = books.filter((book) => {
-        return book.id !== Number(req.params.id)
+    book.save((err) => {
+        if (err) throw err;
+        return res.send(book);
     });
-    res.sendStatus(200);
-}); //not working raw/xxx
-
-app.listen(3000, () => {
-    console.log('api app started');
 });
+
+app.put('/books/:_id', (req, res) => {
+    Book.findByIdAndUpdate(req.params._id, { name: req.body.name, author: req.body.author }, (err, book) => {
+        if (err) throw err;
+        res.sendStatus(200);
+    });
+});
+
+app.delete('/books/:_id', (req, res) => {
+    Book.findByIdAndRemove(req.params._id, (err, book) => {
+        if (err) throw err;
+        res.sendStatus(200);
+    });
+});
+
+app.listen(3000, () => {});
