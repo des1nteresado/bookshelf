@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var Book = require('./book');
 
 mongoose.connect('mongodb://localhost/mongoose_basics', function(err) {
 
@@ -15,7 +16,7 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-var books = [{
+/*var books = [{
         id: 1,
         name: "Татарин",
         author: "Толстой"
@@ -31,50 +32,69 @@ var books = [{
         author: "Средний"
     }
 ];
-
+*/
 
 app.get('/', (req, res) => {
     res.send('Hello api');
 });
 
 app.get('/books', (req, res) => {
-    res.send(books);
+    //res.send(books);
+    Book.find((err, book) => {
+        if (err) throw err;
+        return res.send(book);
+    })
 });
 
-app.get('/books/:id', (req, res) => {
+/*app.get('/books/:id', (req, res) => {
     var book = books.find((book) => {
         return book.id === Number(req.params.id);
     });
     res.send(book);
-});
+});*/
 
 app.post('/books', (req, res) => {
-    var book = {
+    /*var book = {
         id: Date.now(),
-        name: req.body.name, //не паше
-        author: req.body.author //не паше
+        name: req.body.name, 
+        author: req.body.author 
     };
     books.push(book);
-    res.send(book);
-}); //raw is ok!
-app.put('/books/:id', (req, res) => {
-    var book = books.find((book) => {
+    res.send(book);*/
+    var book = new Book({
+        _id: new mongoose.Types.ObjectId(),
+        name: req.body.name,
+        author: req.body.author
+    });
+    book.save((err) => {
+        if (err) throw err;
+        return res.send(book);
+    })
+});
+app.put('/books/:_id', (req, res) => {
+    /*var book = books.find((book) => {
         return book.id === Number(req.params.id);
     });
     book.name = req.body.name;
     book.author = req.body.author;
-    res.send(book);
-}); //not working  raw/xxx
+    res.send(book);*/
+    Book.findByIdAndUpdate(req.params._id, { name: req.body.name, author: req.body.author }, (err, book) => {
+        if (err) throw err;
 
-app.delete('/books/:id', (req, res) => {
-    var item = books.indexOf(books.find(book => book.id === Number(req.params.id)));
-    books.splice(item, 1);
-    res.sendStatus(200);
-<<<<<<< HEAD
+        //return res.send(book);
+        return res.sendStatus(200);
+    });
 });
-=======
-}); //not working raw/xxx
->>>>>>> 9e45d49b47a2e6343209ce3440e7794a8bff29ed
+
+app.delete('/books/:_id', (req, res) => {
+    /*var item = books.indexOf(books.find(book => book.id === Number(req.params.id)));
+    books.splice(item, 1);
+    res.sendStatus(200);*/
+    Book.findByIdAndRemove(req.params._id, (err, book) => {
+        if (err) throw err;
+        return res.sendStatus(200);
+    })
+});
 
 app.listen(3000, () => {
     console.log('api app started');
