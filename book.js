@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-var bookSchema = mongoose.Schema({
+const bookSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     name: String,
     author: String
@@ -8,6 +8,6 @@ var bookSchema = mongoose.Schema({
     versionKey: false
 });
 
-var Book = mongoose.model('Book', bookSchema);
+const Book = mongoose.model('Book', bookSchema);
 
 module.exports = Book;

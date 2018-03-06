@@ -1,67 +1,25 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var Book = require('./book');
-
-mongoose.connect('mongodb://localhost/mongoose_basics', function(err) {
-
-    if (err) throw err;
-
-    console.log('Successfully connected');
-
-});
-
-var app = express();
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const Book = require('./book');
+const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-/*var books = [{
-        id: 1,
-        name: "Татарин",
-        author: "Толстой"
-    },
-    {
-        id: 2,
-        name: "Болгарин",
-        author: "Худой"
-    },
-    {
-        id: 3,
-        name: "Боярин",
-        author: "Средний"
-    }
-];
-*/
-
-app.get('/', (req, res) => {
-    res.send('Hello api');
+mongoose.connect('mongodb://localhost/mongoose_basics', function(err) {
+    if (err) throw err;
 });
 
 app.get('/books', (req, res) => {
-    //res.send(books);
     Book.find((err, book) => {
         if (err) throw err;
-        return res.send(book);
-    })
+        res.send(book);
+    });
 });
 
-/*app.get('/books/:id', (req, res) => {
-    var book = books.find((book) => {
-        return book.id === Number(req.params.id);
-    });
-    res.send(book);
-});*/
-
 app.post('/books', (req, res) => {
-    /*var book = {
-        id: Date.now(),
-        name: req.body.name, 
-        author: req.body.author 
-    };
-    books.push(book);
-    res.send(book);*/
-    var book = new Book({
+    const book = new Book({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         author: req.body.author
@@ -69,33 +27,21 @@ app.post('/books', (req, res) => {
     book.save((err) => {
         if (err) throw err;
         return res.send(book);
-    })
-});
-app.put('/books/:_id', (req, res) => {
-    /*var book = books.find((book) => {
-        return book.id === Number(req.params.id);
     });
-    book.name = req.body.name;
-    book.author = req.body.author;
-    res.send(book);*/
+});
+
+app.put('/books/:_id', (req, res) => {
     Book.findByIdAndUpdate(req.params._id, { name: req.body.name, author: req.body.author }, (err, book) => {
         if (err) throw err;
-
-        //return res.send(book);
-        return res.sendStatus(200);
+        res.sendStatus(200);
     });
 });
 
 app.delete('/books/:_id', (req, res) => {
-    /*var item = books.indexOf(books.find(book => book.id === Number(req.params.id)));
-    books.splice(item, 1);
-    res.sendStatus(200);*/
     Book.findByIdAndRemove(req.params._id, (err, book) => {
         if (err) throw err;
-        return res.sendStatus(200);
-    })
+        res.sendStatus(200);
+    });
 });
 
-app.listen(3000, () => {
-    console.log('api app started');
-});
+app.listen(3000, () => {});
